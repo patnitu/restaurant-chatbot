@@ -1,9 +1,10 @@
 import streamlit as st
 import openai
 import PyPDF2
+import os
 
 # Set OpenAI API Key (Replace with your key)
-openai.api_key = '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'  # Replace with your actual OpenAI API key
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def extract_text_from_pdf(pdf_file):
     pdf_reader = PyPDF2.PdfReader(pdf_file)
