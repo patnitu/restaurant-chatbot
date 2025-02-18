@@ -14,12 +14,14 @@ from sentence_transformers import SentenceTransformer, util
 logging.basicConfig(level=logging.INFO, filename='api.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Secrets Management (Essential for API Keys)
-openai_api_key = os.getenv("OPENAI_API_KEY")
+
 
 # Load Embedding Model (Once per session)
-if "embedding_model" not in st.session_state:
-    st.session_state["embedding_model"] = SentenceTransformer("all-MiniLM-L6-v2")
-embedding_model = st.session_state["embedding_model"]
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+# Load the embedding model
+
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Text Extraction Functions (Concise and robust)
 def extract_text(file):
