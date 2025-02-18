@@ -15,7 +15,7 @@ from sentence_transformers import SentenceTransformer, util
 logging.basicConfig(level=logging.INFO, filename='api.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Secrets Management (Essential for API Keys)
-openai.api_key = st.secrets.get("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Load Embedding Model (Once per session)
 if "embedding_model" not in st.session_state:
