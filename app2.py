@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer, util
 logging.basicConfig(level=logging.INFO, filename='api_calls.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Set OpenAI API Key (using secrets management is highly recommended)
- openai.api_key = st.secrets.get("OPENAI_API_KEY") # Use get to avoid KeyError if not set
+openai.api_key = st.secrets.get("OPENAI_API_KEY") # Use get to avoid KeyError if not set
 # Load the embedding model (do this only once)
 if "embedding_model" not in st.session_state:
     st.session_state["embedding_model"] = SentenceTransformer("all-MiniLM-L6-v2")
