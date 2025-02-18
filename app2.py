@@ -40,7 +40,7 @@ if uploaded_files:
 
 # Function to get OpenAI response
 def ask_chatgpt(question, document_text):
-    cache_key = hashlib.sha256((question + document_text).encode()).hexdigest()
+    cache_key = hashlib.sha256((document_text).encode()).hexdigest()
     if cache_key in st.session_state.get("response_cache", {}):
         logging.info("Answer retrieved from cache.")
         return st.session_state["response_cache"][cache_key]
