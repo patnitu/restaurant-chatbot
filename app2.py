@@ -16,26 +16,39 @@ openai.api_key = st.secrets.get("OPENAI_API_KEY")
 st.title("📄 Multi-File Document Chatbot")
 
 # Initialize session state
-st.session_state.setdefault("documents", "")
-st.session_state.setdefault("response_cache", {})
+if "documents" not in st.session_state:
+    st.session_state["documents"] = ""
 
-def extract_relevant_text(question, document_text):
-    """Extracts relevant sentences from document text based on keyword matching."""
-    question_words = set(question.lower().split())
-    sentences = document_text.split(". ")
-    relevant_sentences = [s for s in sentences if question_words & set(s.lower().split())]
-    return " ".join(relevant_sentences[:5])  # Return up to 5 relevant sentences
+# File uploader
+uploaded_files = st.file_uploader("Upload documents (PDF, DOCX, TXT)", type=["pdf", "docx", "txt"], accept_multiple_files=True)
+if uploaded_files:
+    documents_text = ""
+    for uploaded_file in uploaded_files:
+        if uploaded_file.type == "application/pdf":
+            doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+            for page in doc:
+                documents_text += page.get_text("text") + "\n"
+        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            doc = docx.Document(uploaded_file)
+            for para in doc.paragraphs:
+                documents_text += para.text + "\n"
+        elif uploaded_file.type == "text/plain":
+            documents_text += uploaded_file.read().decode("utf-8") + "\n"
+    
+    st.session_state["documents"] = documents_text
+    st.success("Documents uploaded and processed!")
 
+# Function to get OpenAI response
 def ask_chatgpt(question, document_text):
     cache_key = hashlib.sha256((question + document_text).encode()).hexdigest()
-    if cache_key in st.session_state["response_cache"]:
+    if cache_key in st.session_state.get("response_cache", {}):
         logging.info("Answer retrieved from cache.")
         return st.session_state["response_cache"][cache_key]
-
+    
     logging.info("Calling OpenAI API.")
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",  
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are an assistant that answers questions based on the provided document."},
                 {"role": "user", "content": f"{document_text}\n\n{question}"}
@@ -43,6 +56,8 @@ def ask_chatgpt(question, document_text):
             temperature=0.2
         )
         answer = response.choices[0].message.content.strip()
+        if "response_cache" not in st.session_state:
+            st.session_state["response_cache"] = {}
         st.session_state["response_cache"][cache_key] = answer
         return answer
     except openai.error.OpenAIError as e:
@@ -61,6 +76,6 @@ if question:
         st.warning("Please upload documents first.")
     else:
         with st.spinner("Thinking..."):
-            document_text = extract_relevant_text(question, st.session_state["documents"])
+            document_text = st.session_state["documents"]
             answer = ask_chatgpt(question, document_text)
             st.write("### 🤖 Answer:", answer)
