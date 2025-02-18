@@ -5,7 +5,7 @@ import docx
 import os
 import hashlib
 import logging
-
+from sentence_transformers import SentenceTransformer, util
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename='api_calls.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
