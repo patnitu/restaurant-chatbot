@@ -1,6 +1,7 @@
 import os
 os.system("pip install sentence-transformers")
 import streamlit as st
+st.legacy_caching.clear_cache()
 import openai
 import fitz  # PyMuPDF for PDFs
 import docx
