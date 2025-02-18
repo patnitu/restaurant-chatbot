@@ -1,5 +1,4 @@
 import os
-os.system("pip install sentence-transformers")
 import streamlit as st
 import openai
 import fitz  # PyMuPDF for PDFs
