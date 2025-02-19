@@ -48,7 +48,7 @@ def ask_chatgpt(question, document_text):
     logging.info("Calling OpenAI API.")
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are an assistant that answers questions based on the provided document."},
                 {"role": "user", "content": f"{document_text}\n\n{question}"}
