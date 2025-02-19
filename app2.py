@@ -78,4 +78,13 @@ if question:
         with st.spinner("Thinking..."):
             document_text = st.session_state["documents"]
             answer = ask_chatgpt(question, document_text)
-            st.write("### 🤖 Answer:", answer)
+             # Stylish answer display
+            st.markdown("### 🤖 AI Answer:")
+            st.markdown(
+                f"""
+                <div style="background-color: #f4f4f4; padding: 10px; border-radius: 10px; box-shadow: 2px 2px 10px #ddd;">
+                    <p style="font-size: 16px; color: #333; line-height: 1.5;">{answer}</p>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
