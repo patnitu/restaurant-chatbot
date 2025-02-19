@@ -6,6 +6,23 @@ import os
 import hashlib
 import logging
 from sentence_transformers import SentenceTransformer, util
+
+PROMPT = (
+    "You are a smart assistant that answers based on the provided document. "
+    "Keep responses concise, clear, and easy to understand. "
+    "Use simple language while ensuring completeness. "
+    "If the question is nonsense, gibberish, or inappropriate, return a random number between 1 and 5. If the question is irrelevant to the documents answer with number 10 "
+    "If the prompt is like greeting, example: Hello,how are you etc please reply appropriately"
+)
+# Define response map
+response_map = {
+    "1": "I'm not sure what you mean. Could you clarify?",
+    "2": "That doesn't seem relevant. Please ask something meaningful.",
+    "3": "I'm here to assist with real queries. Could you rephrase?",
+    "4": "Hmm... I didn't quite get that. Can you ask something else?",
+    "5": "I'm here to help with document-based questions. Try again.",
+    "10": "'I can only answer questions based on the provided document. Please ask something related."
+}
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename='api_calls.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -56,6 +73,9 @@ def ask_chatgpt(question, document_text):
             temperature=0.2
         )
         answer = response.choices[0].message.content.strip()
+        # If answer is a number (1 to 5), map it to a predefined response
+        if answer in response_map:
+            answer = response_map[answer]
         if "response_cache" not in st.session_state:
             st.session_state["response_cache"] = {}
         st.session_state["response_cache"][cache_key] = answer
